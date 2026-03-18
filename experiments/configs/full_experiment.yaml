@@ -20,7 +20,7 @@ models:
     bedrock_model_id: "us.deepseek.r1-v1:0"
     reasoning: true
   - id: "qwen3-32b"
-    bedrock_model_id: "us.qwen.qwen3-32b-v1:0"
+    bedrock_model_id: "qwen.qwen3-32b-v1:0"
     reasoning: true
 
 corpus:
