@@ -10,16 +10,16 @@ import json
 import boto3
 
 SUPPORTED_MODELS = {
-    # Non-reasoning
-    "claude-sonnet-4": "anthropic.claude-sonnet-4-20250514-v1:0",
-    "nova-pro": "amazon.nova-pro-v1:0",
-    "nova-lite": "amazon.nova-lite-v1:0",
-    "llama-3-3-70b": "meta.llama3-3-70b-instruct-v1:0",
+    # Non-reasoning (us. prefix = cross-region inference profile, required for newer models)
+    "claude-sonnet-4": "us.anthropic.claude-sonnet-4-20250514-v1:0",
+    "nova-pro": "us.amazon.nova-pro-v1:0",
+    "nova-lite": "us.amazon.nova-lite-v1:0",
+    "llama-3-3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
     # Reasoning
-    "deepseek-r1": "deepseek.r1-v1:0",
+    "deepseek-r1": "us.deepseek.r1-v1:0",
     # TODO: Qwen3-32B not available on this account. Pick a replacement:
-    #   "llama-4-maverick": "meta.llama4-maverick-17b-instruct-v1:0",
-    #   "deepseek-v3": "deepseek.v3.2",
+    #   "llama-4-maverick": "us.meta.llama4-maverick-17b-instruct-v1:0",
+    #   "deepseek-v3": "us.deepseek.v3.2",
 }
 
 

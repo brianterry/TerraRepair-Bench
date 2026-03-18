@@ -5,23 +5,23 @@ experiment:
 
 models:
   - id: "claude-sonnet-4"
-    bedrock_model_id: "anthropic.claude-sonnet-4-20250514-v1:0"
+    bedrock_model_id: "us.anthropic.claude-sonnet-4-20250514-v1:0"
     reasoning: false
   - id: "nova-pro"
-    bedrock_model_id: "amazon.nova-pro-v1:0"
+    bedrock_model_id: "us.amazon.nova-pro-v1:0"
     reasoning: false
   - id: "nova-lite"
-    bedrock_model_id: "amazon.nova-lite-v1:0"
+    bedrock_model_id: "us.amazon.nova-lite-v1:0"
     reasoning: false
   - id: "llama-3-3-70b"
-    bedrock_model_id: "meta.llama3-3-70b-instruct-v1:0"
+    bedrock_model_id: "us.meta.llama3-3-70b-instruct-v1:0"
     reasoning: false
   - id: "deepseek-r1"
-    bedrock_model_id: "deepseek.r1-v1:0"
+    bedrock_model_id: "us.deepseek.r1-v1:0"
     reasoning: true
   # TODO: Qwen3-32B not available. Uncomment a replacement:
   # - id: "llama-4-maverick"
-  #   bedrock_model_id: "meta.llama4-maverick-17b-instruct-v1:0"
+  #   bedrock_model_id: "us.meta.llama4-maverick-17b-instruct-v1:0"
   #   reasoning: false
 
 corpus:
