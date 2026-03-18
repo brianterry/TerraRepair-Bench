@@ -1,0 +1,34 @@
+experiment:
+  name: "full_180_game"
+  description: "6 models × 200 TerraDS modules"
+  random_seed: 42
+
+models:
+  - id: "claude-3-5-sonnet"
+    bedrock_model_id: "us.anthropic.claude-3-5-sonnet-20241022-v2:0"
+    reasoning: false
+  - id: "nova-pro"
+    bedrock_model_id: "us.amazon.nova-pro-v1:0"
+    reasoning: false
+  - id: "nova-lite"
+    bedrock_model_id: "us.amazon.nova-lite-v1:0"
+    reasoning: false
+  - id: "llama-3-3-70b"
+    bedrock_model_id: "us.meta.llama3-3-70b-instruct-v1:0"
+    reasoning: false
+  - id: "deepseek-r1"
+    bedrock_model_id: "us.deepseek.deepseek-r1:0"
+    reasoning: true
+  - id: "qwen3-32b"
+    bedrock_model_id: "us.alibaba.qwen3-32b-instruct:0"
+    reasoning: true
+
+corpus:
+  dir: "data/terrads_sample"
+  max_modules: 200
+
+scanners:
+  - trivy
+  - checkov
+
+output_dir: "experiments/results"
