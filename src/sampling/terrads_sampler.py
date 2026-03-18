@@ -19,10 +19,36 @@ import sqlite3
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from src.scanning.scanner_normalizer import ScannerStack
+
+def verify_terrads_schema(sqlite_path: str) -> dict[str, list[str]]:
+    """
+    Print and return the column names for each TerraDS table.
+
+    Run this once against the downloaded TerraDS.sqlite to verify that
+    column names match what query_candidate_modules expects before
+    running the full sampling pipeline.
+
+    Expected columns:
+      repository: id, clone_url, stars, name, ...
+      module: id, repository_id, relative_path, providers, ...
+      resource: id, module_id, name, type, is_managed, ...
+
+    Usage:
+      python -c "
+      from src.sampling.terrads_sampler import verify_terrads_schema
+      verify_terrads_schema('/path/to/TerraDS.sqlite')
+      "
+    """
+    conn = sqlite3.connect(sqlite_path)
+    schema: dict[str, list[str]] = {}
+    for table in ["Repositories", "Modules", "Resources"]:
+        cols = conn.execute(f"PRAGMA table_info({table})").fetchall()
+        col_names = [c[1] for c in cols]
+        schema[table] = col_names
+        print(f"{table}: {col_names}")
+    conn.close()
+    return schema
 
 
 def query_candidate_modules(
@@ -45,31 +71,27 @@ def query_candidate_modules(
     provider_prefix = f"{provider}_"
     cur.execute(
         """
-        SELECT r.id AS repository_id, r.clone_url, r.stars, r.name AS repo_name,
-               m.id AS module_id, m.relative_path
-        FROM repository r
-        JOIN module m ON m.repository_id = r.id
-        JOIN resource res ON res.module_id = m.id
-        WHERE res.type LIKE ?
-          AND r.stars >= ?
-        GROUP BY r.id, m.id
-        HAVING COUNT(DISTINCT res.type) >= ?
-        ORDER BY r.stars DESC
+        SELECT r.Id AS repository_id, r.CloneUrl AS clone_url, r.StarCount AS stars, r.Name AS repo_name,
+               m.Id AS module_id, m.Path AS relative_path
+        FROM Repositories r
+        JOIN Modules m ON m.RepositoryId = r.Id
+        JOIN Resources res ON res.ModuleId = m.Id
+        WHERE res.Type LIKE ?
+          AND r.StarCount >= ?
+        GROUP BY r.Id, m.Id
+        HAVING COUNT(DISTINCT res.Type) >= ?
+        ORDER BY r.StarCount DESC
         LIMIT ?
         """,
         (f"{provider_prefix}%", min_stars, min_resource_types, limit),
     )
 
     rows = cur.fetchall()
-    conn.close()
-
-    # Get resource types per module
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
     result = []
+
     for row in rows:
         cur.execute(
-            "SELECT DISTINCT type FROM resource WHERE module_id = ?",
+            "SELECT DISTINCT Type FROM Resources WHERE ModuleId = ?",
             (row["module_id"],),
         )
         resource_types = [r[0] for r in cur.fetchall()]
@@ -84,8 +106,8 @@ def query_candidate_modules(
                 "resource_types": resource_types,
             }
         )
-    conn.close()
 
+    conn.close()
     return result
 
 
@@ -127,7 +149,6 @@ def clone_and_extract_module(
 
 def select_final_corpus(
     candidate_dirs: list[str],
-    scanner_stack: "ScannerStack",
     min_findings: int = 3,
     target_count: int = 200,
 ) -> list[str]:
@@ -137,11 +158,27 @@ def select_final_corpus(
     Returns list of module directory paths that have >= min_findings
     combined Trivy + Checkov findings, up to target_count modules.
     """
+    from src.scanning.trivy_runner import run_trivy
+    from src.scanning.checkov_runner import run_checkov
+    from src.scanning.scanner_normalizer import (
+        normalize_trivy_findings,
+        normalize_checkov_findings,
+    )
+
     selected = []
     for module_dir in candidate_dirs:
         if len(selected) >= target_count:
             break
-        findings = scanner_stack.run(module_dir)
-        if len(findings) >= min_findings:
-            selected.append(module_dir)
+        try:
+            trivy_raw = run_trivy(module_dir)
+            checkov_raw = run_checkov(module_dir)
+            trivy_findings = normalize_trivy_findings(trivy_raw)
+            checkov_findings = normalize_checkov_findings(checkov_raw)
+            total = len(trivy_findings) + len(checkov_findings)
+            if total >= min_findings:
+                selected.append(module_dir)
+        except Exception:
+            # Skip modules that fail to scan
+            continue
+
     return selected

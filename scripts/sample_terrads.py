@@ -69,7 +69,6 @@ def main():
     print(f"Cloned {len(candidate_dirs)} modules. Running scanners...")
     selected = select_final_corpus(
         candidate_dirs=candidate_dirs,
-        scanner_stack=scanner_stack,
         min_findings=args.min_findings,
         target_count=args.target,
     )

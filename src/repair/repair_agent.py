@@ -126,17 +126,18 @@ def repair_module(
         completion_tokens = usage.get("output_tokens", 0)
 
         repaired_code = sanitize_repair_response(response_text, model_id)
-        hcl_valid = is_valid_hcl(repaired_code)
-        success = hcl_valid
-        if not success:
-            error_msg = "Repaired code failed HCL validation"
-        else:
+        success = bool(repaired_code)  # True if LLM returned non-empty response
+        hcl_valid = is_valid_hcl(repaired_code) if success else False
+
+        if success and hcl_valid:
             # Write repaired code to temp dir for scanning
             tmp = tempfile.mkdtemp()
             (Path(tmp) / "main.tf").write_text(repaired_code)
             repaired_dir = tmp
+        elif success and not hcl_valid:
+            error_msg = "Repaired code failed HCL validation"
     except Exception as e:
-        error_msg = str(e)
+        error_msg = f"{type(e).__name__}: {str(e)}"
 
     # Cost estimation
     costs = MODEL_COSTS.get(model_id, (0.001, 0.001))
