@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 
 import boto3
+from botocore.config import Config as BotoConfig
 
 SUPPORTED_MODELS = {
     # Non-reasoning (us. prefix = cross-region inference profile, required for newer models)
@@ -24,8 +25,14 @@ SUPPORTED_MODELS = {
 
 
 class BedrockClient:
-    def __init__(self, region: str = "us-east-1"):
-        self.client = boto3.client("bedrock-runtime", region_name=region)
+    def __init__(self, region: str = "us-east-1", read_timeout: int = 300):
+        config = BotoConfig(
+            read_timeout=read_timeout,
+            retries={"max_attempts": 2, "mode": "adaptive"},
+        )
+        self.client = boto3.client(
+            "bedrock-runtime", region_name=region, config=config
+        )
 
     def invoke(
         self,
