@@ -3,6 +3,7 @@ Filter criteria for TerraDS modules: AWS provider, complexity, stars.
 
 Used to validate candidates before or after scanning.
 """
+from __future__ import annotations
 
 
 def passes_provider_filter(resource_types: list[str], provider: str = "aws") -> bool:

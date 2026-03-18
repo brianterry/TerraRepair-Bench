@@ -1,6 +1,7 @@
 """
 Run trivy config against a directory and parse JSON output.
 """
+from __future__ import annotations
 
 import json
 import subprocess

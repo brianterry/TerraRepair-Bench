@@ -13,6 +13,7 @@ Output: directory of 200 HCL modules, one subdirectory per module,
 with metadata.json per module recording repo name, star count,
 resource types, and initial scanner findings.
 """
+from __future__ import annotations
 
 import json
 import sqlite3

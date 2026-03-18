@@ -3,6 +3,7 @@ AWS Bedrock wrapper supporting all six target models.
 
 Handles cross-region inference profiles (us.anthropic, us.amazon, etc.).
 """
+from __future__ import annotations
 
 import json
 

@@ -1,6 +1,7 @@
 """
 Single LLM call to repair Terraform code given scanner findings.
 """
+from __future__ import annotations
 
 import tempfile
 from dataclasses import dataclass

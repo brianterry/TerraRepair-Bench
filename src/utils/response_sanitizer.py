@@ -3,6 +3,7 @@ Handle model-specific output quirks before writing repaired code.
 
 Strips <think> blocks, markdown fences, preambles.
 """
+from __future__ import annotations
 
 import re
 

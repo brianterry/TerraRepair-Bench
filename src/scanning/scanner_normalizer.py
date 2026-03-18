@@ -4,6 +4,7 @@ Unified finding format across Trivy and Checkov.
 Normalizes raw scanner output into Finding dataclass.
 Deduplicates by (rule_id, resource_name).
 """
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

@@ -4,6 +4,7 @@ Core metric computation — the primary scientific contribution.
 Deterministic matching on (rule_id, resource_name) pairs.
 No LLM judge.
 """
+from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import TYPE_CHECKING

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Test delta scorer: resolved, introduced, metrics."""
 
 from unittest.mock import MagicMock
