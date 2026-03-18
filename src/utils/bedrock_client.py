@@ -18,9 +18,7 @@ SUPPORTED_MODELS = {
     "llama-3-3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
     # Reasoning
     "deepseek-r1": "us.deepseek.r1-v1:0",
-    # TODO: Qwen3-32B not available on this account. Pick a replacement:
-    #   "llama-4-maverick": "us.meta.llama4-maverick-17b-instruct-v1:0",
-    #   "deepseek-v3": "us.deepseek.v3.2",
+    "qwen3-32b": "us.qwen.qwen3-32b-v1:0",
 }
 
 
