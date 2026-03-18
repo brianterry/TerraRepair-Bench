@@ -54,12 +54,11 @@ class RepairResult:
 
 # Approximate cost per 1K tokens (USD) - update as needed
 MODEL_COSTS = {
-    "claude-3-5-sonnet": (0.003, 0.015),
+    "claude-sonnet-4": (0.003, 0.015),
     "nova-pro": (0.001, 0.001),
     "nova-lite": (0.0001, 0.0002),
     "llama-3-3-70b": (0.0008, 0.0008),
     "deepseek-r1": (0.0014, 0.0028),
-    "qwen3-32b": (0.0004, 0.0004),
 }
 
 

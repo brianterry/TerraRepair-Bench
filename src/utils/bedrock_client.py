@@ -10,12 +10,16 @@ import json
 import boto3
 
 SUPPORTED_MODELS = {
-    "claude-3-5-sonnet": "us.anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "nova-pro": "us.amazon.nova-pro-v1:0",
-    "nova-lite": "us.amazon.nova-lite-v1:0",
-    "llama-3-3-70b": "us.meta.llama3-3-70b-instruct-v1:0",
-    "deepseek-r1": "us.deepseek.deepseek-r1:0",
-    "qwen3-32b": "us.alibaba.qwen3-32b-instruct:0",
+    # Non-reasoning
+    "claude-sonnet-4": "anthropic.claude-sonnet-4-20250514-v1:0",
+    "nova-pro": "amazon.nova-pro-v1:0",
+    "nova-lite": "amazon.nova-lite-v1:0",
+    "llama-3-3-70b": "meta.llama3-3-70b-instruct-v1:0",
+    # Reasoning
+    "deepseek-r1": "deepseek.r1-v1:0",
+    # TODO: Qwen3-32B not available on this account. Pick a replacement:
+    #   "llama-4-maverick": "meta.llama4-maverick-17b-instruct-v1:0",
+    #   "deepseek-v3": "deepseek.v3.2",
 }
 
 
@@ -37,8 +41,8 @@ class BedrockClient:
         """
         bedrock_id = SUPPORTED_MODELS.get(model_id, model_id)
 
-        # Claude / Nova use messages API; others may use Converse
-        if "claude" in bedrock_id or "nova" in bedrock_id:
+        # Claude uses Anthropic messages API
+        if "claude" in bedrock_id:
             body = {
                 "anthropic_version": "bedrock-2023-05-31",
                 "max_tokens": max_tokens,
@@ -61,7 +65,7 @@ class BedrockClient:
                 "output_tokens": resp_body.get("usage", {}).get("output_tokens", 0),
             }
         else:
-            # Llama, DeepSeek, Qwen use Converse API
+            # Nova, Llama, DeepSeek use Converse API
             body = {
                 "inferenceConfig": {
                     "maxNewTokens": max_tokens,
