@@ -130,6 +130,14 @@ def score_repair(
       finding_after.rule_id == X AND finding_after.resource_name == Y
       AND no finding_before has the same rule_id AND resource_name.
     """
+    hcl_valid = repair_result.hcl_valid
+
+    # When HCL is invalid, no repaired code was written to disk and no scan
+    # was performed.  An empty findings_after would be misleading (looks like
+    # all issues resolved).  Treat it as "nothing changed".
+    if not hcl_valid:
+        findings_after = list(findings_before)
+
     before_keys = {_finding_key(f) for f in findings_before}
     after_keys = {_finding_key(f) for f in findings_after}
 
@@ -176,5 +184,5 @@ def score_repair(
         class_breakdown=class_breakdown,
         repair_cost_usd=repair_result.repair_cost_usd,
         repair_tokens=repair_result.repair_prompt_tokens + repair_result.repair_completion_tokens,
-        hcl_valid=repair_result.hcl_valid,
+        hcl_valid=hcl_valid,
     )

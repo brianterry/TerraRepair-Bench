@@ -27,8 +27,10 @@ def sanitize_repair_response(raw_response: str, model_id: str) -> str:
     if "deepseek" in model_id.lower():
         content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
 
-    # Strip markdown code fences (```hcl ... ``` or ``` ... ```)
-    fence_match = re.search(r"```(?:hcl)?\s*\n(.*?)```", content, re.DOTALL)
+    # Strip markdown code fences (```hcl, ```terraform, ```tf, or bare ```)
+    fence_match = re.search(
+        r"```(?:hcl|terraform|tf)?\s*\n(.*?)```", content, re.DOTALL | re.IGNORECASE
+    )
     if fence_match:
         content = fence_match.group(1)
 
@@ -83,9 +85,6 @@ def is_valid_hcl(content: str) -> bool:
     if open_braces != 0:
         return False
 
-    # Must have at least one resource/data/provider block
-    if "resource " not in content and "data " not in content and "provider " not in content:
-        return False
-
-    # Basic structural check
-    return "resource " in content or "data " in content
+    # Must have at least one valid HCL block type
+    hcl_keywords = ["resource ", "data ", "provider ", "module ", "variable ", "output ", "locals "]
+    return any(kw in content for kw in hcl_keywords)
