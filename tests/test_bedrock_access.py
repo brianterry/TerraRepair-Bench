@@ -49,9 +49,14 @@ def client():
 class TestModelAccess:
     """Verify every model in SUPPORTED_MODELS responds to a trivial prompt."""
 
+    REASONING_MODELS = {"deepseek-r1", "qwen3-32b"}
+
     @pytest.mark.parametrize("model_id", list(SUPPORTED_MODELS.keys()))
     def test_model_responds(self, client, model_id):
-        text, usage = client.invoke(model_id, "Reply with only the word OK", max_tokens=50)
+        # Reasoning models need more tokens — they consume budget on internal
+        # chain-of-thought before producing visible output.
+        tokens = 256 if model_id in self.REASONING_MODELS else 50
+        text, usage = client.invoke(model_id, "Reply with only the word OK", max_tokens=tokens)
         assert text.strip(), f"{model_id} returned empty response"
         assert usage["input_tokens"] > 0, f"{model_id} reported 0 input tokens"
         assert usage["output_tokens"] > 0, f"{model_id} reported 0 output tokens"
