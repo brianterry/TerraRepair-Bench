@@ -53,16 +53,16 @@ def normalize_checkov_findings(raw: list[dict]) -> list[Finding]:
     """Convert raw Checkov failed_checks to Finding objects."""
     findings = []
     for item in raw:
-        check = item.get("check", {})
         line_range = item.get("file_line_range", [0, 0])
         resource = item.get("resource", "unknown")
         resource_type = resource.split(".")[0] if "." in resource else resource
+        severity = item.get("severity", item.get("check", {}).get("severity", "UNKNOWN"))
         findings.append(
             Finding(
                 tool="checkov",
                 rule_id=item.get("check_id", ""),
-                title=check.get("name", ""),
-                severity=check.get("severity", "UNKNOWN").upper(),
+                title=item.get("check_name", ""),
+                severity=(severity or "UNKNOWN").upper(),
                 resource_name=resource,
                 resource_type=resource_type,
                 file_path=item.get("file_path", ""),

@@ -74,7 +74,8 @@ def main():
     )
     print(f"Selected {len(selected)} modules with >= {args.min_findings} findings")
 
-    # Write metadata per module
+    # Write metadata per module and collect manifest entries
+    manifest_modules = []
     for mod_dir in selected:
         findings = scanner_stack.run(mod_dir)
         meta_path = Path(mod_dir) / "metadata.json"
@@ -89,14 +90,25 @@ def main():
                             "title": f.title,
                             "resource_name": f.resource_name,
                         }
-                        for f in findings[:20]  # Sample
+                        for f in findings[:20]
                     ],
                 },
                 indent=2,
             )
         )
+        manifest_modules.append({
+            "module_id": Path(mod_dir).name,
+            "path": str(mod_dir),
+            "findings_count": len(findings),
+        })
 
-    print(f"Corpus written to {output_path}")
+    # Write corpus manifest
+    corpus_manifest = {
+        "selected_count": len(selected),
+        "modules": manifest_modules,
+    }
+    (output_path / "corpus.json").write_text(json.dumps(corpus_manifest, indent=2))
+    print(f"Corpus written to {output_path} ({len(selected)} modules, manifest: corpus.json)")
 
 
 if __name__ == "__main__":

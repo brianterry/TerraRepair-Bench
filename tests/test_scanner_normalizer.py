@@ -39,7 +39,8 @@ def test_normalize_checkov_findings():
     raw = [
         {
             "check_id": "CKV_AWS_19",
-            "check": {"name": "Ensure S3 encryption", "severity": "HIGH"},
+            "check_name": "Ensure S3 encryption",
+            "severity": "HIGH",
             "file_path": "/main.tf",
             "resource": "aws_s3_bucket.example",
             "file_line_range": [1, 20],
@@ -50,6 +51,8 @@ def test_normalize_checkov_findings():
     f = findings[0]
     assert f.tool == "checkov"
     assert f.rule_id == "CKV_AWS_19"
+    assert f.title == "Ensure S3 encryption"
+    assert f.severity == "HIGH"
     assert f.resource_name == "aws_s3_bucket.example"
     assert f.resource_type == "aws_s3_bucket"
     assert f.start_line == 1
