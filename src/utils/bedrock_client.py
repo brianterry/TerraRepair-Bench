@@ -24,6 +24,16 @@ SUPPORTED_MODELS = {
 # Models that need invoke_model instead of Converse
 _INVOKE_MODEL_IDS = {"qwen"}
 
+# Per-model max output token limits (from Bedrock validation errors)
+_MODEL_MAX_TOKENS = {
+    "claude-sonnet-4": 64000,
+    "nova-pro": 10000,
+    "nova-lite": 10000,
+    "llama-3-3-70b": 8192,
+    "deepseek-r1": 16384,
+    "qwen3-32b": 16384,
+}
+
 
 class BedrockClient:
     def __init__(self, region: str = "us-east-1", read_timeout: int = 300):
@@ -69,6 +79,8 @@ class BedrockClient:
         Temperature 0.0 for deterministic repair.
         """
         bedrock_id = SUPPORTED_MODELS.get(model_id, model_id)
+        model_limit = _MODEL_MAX_TOKENS.get(model_id, max_tokens)
+        max_tokens = min(max_tokens, model_limit)
 
         if "claude" in bedrock_id:
             return self._invoke_claude(bedrock_id, prompt, max_tokens, temperature)
