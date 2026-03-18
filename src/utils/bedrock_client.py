@@ -73,7 +73,7 @@ class BedrockClient:
             # Nova, Llama, DeepSeek use Converse API
             body = {
                 "inferenceConfig": {
-                    "maxNewTokens": max_tokens,
+                    "maxTokens": max_tokens,
                     "temperature": temperature,
                 },
                 "messages": [{"role": "user", "content": [{"text": prompt}]}],
