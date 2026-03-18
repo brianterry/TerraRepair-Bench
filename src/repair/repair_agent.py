@@ -86,7 +86,7 @@ def repair_module(
     findings: list["Finding"],
     model_id: str,
     bedrock_client: "BedrockClient",
-    max_tokens: int = 8192,
+    max_tokens: int = 16384,
 ) -> RepairResult:
     """
     Concatenate all .tf files in module_dir into a single string.
